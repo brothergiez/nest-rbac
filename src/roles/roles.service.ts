@@ -4,12 +4,16 @@ import { Model, isValidObjectId } from 'mongoose';
 import slugify from 'slugify';
 
 import { Role } from './schemas/role.schema';
+import { User } from '../users/schemas/user.schema';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 
 @Injectable()
 export class RolesService {
-  constructor(@InjectModel(Role.name) private roleModel: Model<Role>) {}
+  constructor(
+    @InjectModel(Role.name) private roleModel: Model<Role>,
+    @InjectModel(User.name) private userModel: Model<User>,
+  ) { }
 
   async createRole(createRoleDto: CreateRoleDto): Promise<Role> {
     const { name, permissions } = createRoleDto;
@@ -42,33 +46,52 @@ export class RolesService {
     return this.roleModel.findById(id).exec();
   }
 
-  async updateRole(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
-    if (!isValidObjectId(id)) {
+  async updateRole(editRoleDto: UpdateRoleDto): Promise<Role> {
+    const { slug, name, permissions } = editRoleDto;
+
+    // Find the role by slug
+    const role = await this.roleModel.findOne({ slug }).exec();
+    if (!role) {
       throw new NotFoundException('Role not found');
     }
 
-    return this.roleModel.findByIdAndUpdate(id, updateRoleDto, { new: true }).exec();
+    // Update role details if provided
+    if (name) role.name = name;
+    if (permissions) role.permissions = permissions;
+
+    return role.save();
   }
 
-  async deleteRole(id: string): Promise<Role> {
-    if (!isValidObjectId(id)) {
+  async deleteRole(slug: string): Promise<void> {
+    // Check if the role exists
+    const role = await this.roleModel.findOne({ slug }).exec();
+    if (!role) {
       throw new NotFoundException('Role not found');
     }
 
-    return this.roleModel.findByIdAndDelete(id).exec();
+    // Check if any user is assigned to this role
+    const usersWithRole = await this.userModel.find({ roles: slug }).countDocuments();
+    if (usersWithRole > 0) {
+      throw new ConflictException(
+        'Cannot delete role: Users are assigned to this role',
+      );
+    }
+
+    // Delete the role if no users are assigned
+    await this.roleModel.deleteOne({ slug }).exec();
   }
 
-    async findByName(roleName: string): Promise<Role> {
-      return this.roleModel.findOne({ name: roleName }).exec();
-    }
-  
-    async getRolesWithPermission(module: string, action: string): Promise<string[]> {
-      const roles = await this.roleModel.find({
-        permissions: {
-          $elemMatch: { module, actions: action },
-        },
-      });
-  
-      return roles.map((role) => role.name);
-    }
+  async findByName(roleName: string): Promise<Role> {
+    return this.roleModel.findOne({ name: roleName }).exec();
+  }
+
+  async getRolesWithPermission(module: string, action: string): Promise<string[]> {
+    const roles = await this.roleModel.find({
+      permissions: {
+        $elemMatch: { module, actions: action },
+      },
+    });
+
+    return roles.map((role) => role.name);
+  }
 }

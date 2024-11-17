@@ -2,6 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { DeleteRoleDto } from './dto/delete-role.dto';
 import { DynamicRoles } from './decorators/dynamic-roles.decorator';
 
 
@@ -9,7 +10,7 @@ import { DynamicRoles } from './decorators/dynamic-roles.decorator';
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
-  @Post()
+  @Post('/create')
   @DynamicRoles('roles', 'create')
   async createRole(@Body() createRoleDto: CreateRoleDto) {
     return this.rolesService.createRole(createRoleDto);
@@ -27,18 +28,16 @@ export class RolesController {
     return this.rolesService.findRoleById(id);
   }
 
-  @Put(':id')
+  @Post('edit')
   @DynamicRoles('roles', 'edit')
-  async updateRole(
-    @Param('id') id: string,
-    @Body() updateRoleDto: UpdateRoleDto,
-  ) {
-    return this.rolesService.updateRole(id, updateRoleDto);
+
+  async updateRole(@Body() updateRoleDto: UpdateRoleDto) {
+    return this.rolesService.updateRole(updateRoleDto);
   }
 
-  @Delete(':id')
-  @DynamicRoles('roles', 'delete')
-  async deleteRole(@Param('id') id: string) {
-    return this.rolesService.deleteRole(id);
+  @Post('delete')
+  @DynamicRoles('roles', 'delete') // Role-based authorization
+  async deleteRole(@Body() deleteRoleDto: DeleteRoleDto) {
+    return this.rolesService.deleteRole(deleteRoleDto.slug);
   }
 }

@@ -14,6 +14,6 @@ import { Role, RoleSchema } from '../roles/schemas/role.schema';
   ],
   controllers: [UsersController],
   providers: [UsersService],
-  exports: [UsersService], // Jika perlu diakses modul lain
+  exports: [UsersService, MongooseModule], // Jika perlu diakses modul lain
 })
 export class UsersModule {}
