@@ -55,7 +55,6 @@ export class RolesService {
       throw new NotFoundException('Role not found');
     }
 
-    // Update role details if provided
     if (name) role.name = name;
     if (permissions) role.permissions = permissions;
 
@@ -63,13 +62,11 @@ export class RolesService {
   }
 
   async deleteRole(slug: string): Promise<void> {
-    // Check if the role exists
     const role = await this.roleModel.findOne({ slug }).exec();
     if (!role) {
       throw new NotFoundException('Role not found');
     }
 
-    // Check if any user is assigned to this role
     const usersWithRole = await this.userModel.find({ roles: slug }).countDocuments();
     if (usersWithRole > 0) {
       throw new ConflictException(
@@ -77,7 +74,6 @@ export class RolesService {
       );
     }
 
-    // Delete the role if no users are assigned
     await this.roleModel.deleteOne({ slug }).exec();
   }
 

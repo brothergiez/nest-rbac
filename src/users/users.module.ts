@@ -9,11 +9,11 @@ import { Role, RoleSchema } from '../roles/schemas/role.schema';
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
-      { name: Role.name, schema: RoleSchema }, // Untuk mengambil data role di user service
+      { name: Role.name, schema: RoleSchema },
     ]),
   ],
   controllers: [UsersController],
   providers: [UsersService],
-  exports: [UsersService, MongooseModule], // Jika perlu diakses modul lain
+  exports: [UsersService, MongooseModule],
 })
 export class UsersModule {}

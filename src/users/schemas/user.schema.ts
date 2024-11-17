@@ -6,17 +6,17 @@ export class User extends Document {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true, unique: true }) // Tambahkan email dengan unique constraint
+  @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ required: true }) // Password terenkripsi
+  @Prop({ required: true })
   password: string;
 
   @Prop({ type: [String], required: true })
   roles: string[];
 
   @Prop()
-  __v?: number; // Tambahkan __v sebagai properti opsional
+  __v?: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -36,7 +36,7 @@ export class RolesController {
   }
 
   @Post('delete')
-  @DynamicRoles('roles', 'delete') // Role-based authorization
+  @DynamicRoles('roles', 'delete')
   async deleteRole(@Body() deleteRoleDto: DeleteRoleDto) {
     return this.rolesService.deleteRole(deleteRoleDto.slug);
   }

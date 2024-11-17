@@ -2,9 +2,9 @@ import { IsArray, IsString } from 'class-validator';
 
 export class AssignRoleDto {
   @IsString()
-  id: string; // User ID sent in the body
+  id: string;
 
   @IsArray()
-  @IsString({ each: true }) // Ensure all array elements are strings
+  @IsString({ each: true }) 
   roles: string[];
 }

@@ -11,15 +11,15 @@ class PermissionDto {
 
 export class UpdateRoleDto {
   @IsString()
-  slug: string; // Identify the role to edit
+  slug: string;
 
   @IsString()
-  @IsOptional() // Optional if the name doesn't change
+  @IsOptional()
   name?: string;
 
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => PermissionDto)
-  @IsOptional() // Optional if permissions don't change
+  @IsOptional()
   permissions?: PermissionDto[];
 }

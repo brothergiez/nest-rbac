@@ -15,8 +15,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       context.getClass(),
     ]);
     if (isPublic) {
-      return true; // Melewati autentikasi jika endpoint diberi @Public()
+      return true;
     }
-    return super.canActivate(context) as Promise<boolean>; // Pastikan output dikonversi menjadi Promise<boolean>
+    return super.canActivate(context) as Promise<boolean>;
   }
 }

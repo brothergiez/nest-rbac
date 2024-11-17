@@ -4,13 +4,13 @@ export class CreateUserDto {
   @IsString()
   name: string;
 
-  @IsEmail() // Validasi email
+  @IsEmail()
   email: string;
 
   @IsString()
-  @MinLength(6) // Minimum panjang password
+  @MinLength(6)
   password: string;
 
   @IsArray()
-  roles: string[]; // Array of role IDs
+  roles: string[];
 }
